@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>內容創作作品集 - 洪家佑</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* 作品集特定樣式 */
+        .gallery-container {
+            padding-top: 80px; /* 為固定導航欄留出空間 */
+        }
+        
+        .masonry-grid {
+            column-count: 3;
+            column-gap: 20px;
+            padding: 20px;
+        }
+
+        .gallery-item {
+            break-inside: avoid;
+            margin-bottom: 20px;
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 10px;
+        }
+
+        .gallery-item .overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            color: white;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .gallery-item:hover .overlay {
+            opacity: 1;
+        }
+
+        .back-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #007bff;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        .back-button:hover {
+            transform: translateY(-3px);
+        }
+
+        @media (max-width: 1024px) {
+            .masonry-grid {
+                column-count: 2;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .masonry-grid {
+                column-count: 1;
+                padding: 10px;
+            }
+            
+            .gallery-item .overlay {
+                opacity: 1;
+                background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 導航欄 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">洪家佑</div>
+            <button class="menu-toggle" aria-label="選單">☰</button>
+            <ul class="nav-links">
+                <li><a href="index.html#home">首頁</a></li>
+                <li><a href="index.html#about">關於</a></li>
+                <li><a href="index.html#products">產品</a></li>
+                <li><a href="index.html#services">服務</a></li>
+                <li><a href="index.html#contact">聯絡</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 作品集區塊 -->
+    <div class="gallery-container">
+        <div id="masonry-grid" class="masonry-grid">
+            <!-- 圖片將由 JavaScript 動態載入 -->
+        </div>
+    </div>
+
+    <!-- 返回按鈕 -->
+    <a href="index.html" class="back-button">返回首頁</a>
+
+    <!-- 先引入圖片列表檔案 -->
+    <script src="list-images.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 漢堡選單功能
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            
+            menuToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+            });
+
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navLinks.classList.remove('active');
+                });
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.navbar')) {
+                    navLinks.classList.remove('active');
+                }
+            });
+
+            // 載入作品集
+            loadPortfolio();
+        });
+
+        // 載入作品集函數
+        function loadPortfolio() {
+            const grid = document.getElementById('masonry-grid');
+            
+            // 使用 list-images.js 中定義的 portfolioImages
+            portfolioImages.forEach((item, index) => {
+                const galleryItem = document.createElement('div');
+                galleryItem.className = 'gallery-item';
+                
+                const img = new Image();
+                img.onload = () => {
+                    galleryItem.innerHTML = `
+                        <img src="${item.path}" alt="作品${index + 1}">
+                        <div class="overlay">
+                            <h3>${item.title}</h3>
+                            <p>${item.description}</p>
+                        </div>
+                    `;
+                    grid.appendChild(galleryItem);
+                };
+                
+                img.onerror = () => {
+                    console.error(`無法載入圖片: ${item.path}`);
+                };
+                
+                img.src = item.path;
+            });
+        }
+    </script>
+</body>
+</html> 
